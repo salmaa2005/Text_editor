@@ -1,0 +1,197 @@
+printf("1-Insert data in the file\n");
+-> inserts data into a file (not a requirement)
+
+printf("2-Read data from file\n"); //S
+-> shows all lines
+
+printf("3-Read file in the list\n"); //R
+-> reads the contents of a file into a ds
+*and properly handles the case when the file doesn't exist
+*doesn't handle if the file exists but is empty 
+
+printf("4-Write the data from list to file\n"); //W
+*we don't insert directly into a list (still discussing.. )
+
+printf("5-Insert new line in specific position\n"); //I
+*inserts in a list not in a file
+
+printf("6-Delete line from specific position\n"); //D
+*deletes only from a list
+
+printf("7-Remove all data from list and file\n"); //V
+*doesn't handle empty files (prints "deleted" anyway)
+
+printf("8-Length in characters of specific line\n"); //L
+*deals with the list not the file
+
+printf("9-Sort the lines in list\n"); //T
+
+printf("10-Show all lines in list\n"); //S
+*deals with the list not the file
+
+printf("11-Replace specific line\n"); //C
+*deals with the list not the file
+
+printf("Enter (-1) for EXIT\n");
+
+__________________________________________________________________________________________
+
+void Menu()
+{
+DoubleList l;
+char text[150], FileName[150];
+int choice, exp, index;
+CreateDoubleList(&l);
+printf("1-Insert data in file, 2-Read data from file, 3-Read file in the "
+"list, 4-write the data from list to file\n 5-insert new line in "
+"specific position, 6-delete line from specific position, 7-Remove "
+"all data from list and file\n 8-length in characters of specific "
+"line, 9-Sort the lines in list, 10-show all lines in list\n "
+"11-Replace specific line\n Enter (-1) for EXIT\n");
+printf("Enter Your choice.\n");
+choice = getChoice();
+while (choice != -1)
+{
+if (choice < -1 || choice > 11 || choice == 0)
+{
+printf("Enter correct choice.\n");
+}
+else if (choice == 1)
+{
+int num;
+printf("Enter file name \n");
+strcpy(FileName, getString());
+printf("Enter number of lines.\n");
+num = getChoice();
+for (int i = 0; i < num; i++)
+{
+printf("Enter the line.\n");
+strcpy(text, getString());
+exp = appendInFile(FileName, text);
+if (exp == 0)
+printf("file not exist or cannot open.\n");
+}
+}
+else if (choice == 2)
+{
+printf("Enter file name.\n");
+strcpy(FileName, getString());
+exp = ShowAllLines(FileName);
+if (exp == 0)
+printf("file not exist or cannot open.\n");
+}
+else if (choice == 3)
+{
+if (!DoubleListEmpty(&l))
+destroy(&l);
+printf("Enter file name.\n");
+strcpy(FileName, getString());
+exp = readFileIntoList(FileName, &l);
+if (exp == 0)
+printf("file not exist or cannot open.\n");
+else
+printf("Inserted.\n");
+}
+else if (choice == 4)
+{
+printf("Enter file name.\n");
+strcpy(FileName, getString());
+exp = UploadToFile(FileName, &l);
+if (exp == 0)
+printf("file not exist or cannot open.\n");
+else
+printf("Inserted.\n");
+}
+else if (choice == 5)
+{
+int pos;
+printf("Enter the position.\n");
+pos = getChoice();
+if (pos >= 0 && pos <= lenght(&l))
+{
+printf("Enter the line.\n");
+strcpy(text, getString());
+format(text);
+InsertInPos(&l, pos, text);
+}
+else
+printf("position cannot found.\n");
+}
+else if (choice == 6)
+{
+int pos;
+printf("Enter the position.\n");
+pos = getChoice();
+if (pos >= 0 && pos < lenght(&l))
+{
+DeleteInPos(&l, pos, text);
+printf("the deleted line is : %s \n", text);
+}
+else
+printf("position cannot found.\n");
+}
+else if (choice == 7)
+{
+printf("Enter file name.\n");
+strcpy(FileName, getString());
+destroy(&l);
+exp = removeAllLines(FileName);
+if (exp == 0)
+printf("file not exist or cannot open.\n");
+else
+printf("Deleted.\n");
+}
+else if (choice == 8)
+{
+int pos;
+printf("Enter the position.\n");
+pos = getChoice();
+if (pos >= 0 && pos < lenght(&l))
+{
+exp = showLength(&l, pos);
+printf("length = %d\n", exp);
+}
+else
+printf("position not found.\n");
+}
+else if (choice == 9)
+{
+sortList(&l);
+}
+else if (choice == 10)
+{
+TraverseDoubleList(&l, &DisplayDoubleList);
+}
+else if (choice == 11)
+{
+int pos;
+printf("Enter the position.\n");
+pos = getChoice();
+if (pos >= 0 && pos < lenght(&l))
+{
+printf("Enter the line.\n");
+strcpy(text, getString());
+format(text);
+ReplaceLine(&l, pos, text);
+}
+else
+printf("position cannot found.\n");
+}
+printf("1-Insert data in file\n");
+printf("2-Read data from file\n");
+printf("3-Read file in the list\n");
+printf("4-write the data from list to file\n");
+printf("5-insert new line in specific position\n");
+printf("6-delete line from specific position\n");
+printf("7-Remove all data from list and file\n");
+printf("8-length in characters of specific line\n");
+printf("9-Sort the lines in list\n");
+printf("10-show all lines in list\n");
+printf("11-Replace specific line\n");
+printf("Enter (-1) for EXIT\n");
+
+printf("Enter Your choice.\n");
+choice = getChoice();
+}
+printf("EXIT.\n");
+}
