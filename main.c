@@ -1,5 +1,8 @@
 #include "DoubleLinkedList.h"
 #include "FileHandler.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void DisplayDoubleList(Info e[])
 {
@@ -43,12 +46,13 @@ void Menu()
 {
 	DoubleList l;
 	char text[150], FileName[150];
-	int choice, exp, index, num, pos;
+	int choice, exp, index, num, pos, flag;
 	CreateDoubleList(&l);
-
+	FILE *fptr;
+	Info e;
 	do
 	{
-		printf("0-Insert data into a file\n");
+		printf("\nMENU:\n0-Insert data into a file\n");
 		printf("1-R: Read File Into DS\n");
 		printf("2-W: Write the lines stored in the DS Into The File\n");
 		printf("3-I: Insert a new line at a specific Line number\n");
@@ -61,11 +65,8 @@ void Menu()
 
 		printf("\n\nADDITIONAL FUNCTIONS:\n");
 
-		printf("10-Insert a new line at a specific position in the DS\n");
-		printf("11-Show all lines in the DS\n");
-		printf("12-Delete a specific line from the DS\n");
-		printf("13-Replace a specific line in the DS\n");
-		printf("14-Search for a specific line in the DS\n");
+		printf("10-Show all lines in the DS\n");
+		printf("11-Show the length of a specific line in the DS\n");
 		printf("Enter (-1) to EXIT\n");
 		printf("\nEnter Your choice: ");
 		choice = getChoice();
@@ -77,13 +78,25 @@ void Menu()
 				strcpy(FileName, getString());
 				printf("\nEnter number of lines: ");
 				num = getChoice();
-				printf("\nEnter text:\n");
-				for (int i = 0; i < num; i++)
+				if (num == 0)
 				{
-					strcpy(text, getString());
-					exp = appendInFile(FileName, text);
+					exp = removeAllLines(FileName);
 					if (exp == 0)
 						printf("File doesn't exist or couldn't be opened\n");
+					else
+						printf("File created but is empty\n");
+				}
+				else
+				{
+					printf("\nEnter text:\n");
+					for (int i = 0; i < num; i++)
+					{
+						strcpy(text, getString());
+						exp = appendInFile(FileName, text);
+						if (exp == 0)
+							printf(
+								"File doesn't exist or couldn't be opened\n");
+					}
 				}
 				break;
 
@@ -93,74 +106,194 @@ void Menu()
 				printf("\nEnter file name: ");
 				strcpy(FileName, getString());
 				exp = readFileIntoList(FileName, &l);
-				if (exp == 0)
+				fptr = fopen(FileName, "r");
+				if (fptr == NULL)
 					printf("File doesn't exist or couldn't be opened\n");
+				else if (getc(fptr) == EOF)
+					printf("This file is empty\n");
 				else
-					printf("Inserted Successfully\n");
+					printf("Read Successfully!\n");
 				break;
 
 			case 2:
-				printf("Enter file name.\n");
+				printf("\nEnter file name: ");
 				strcpy(FileName, getString());
-				exp = UploadToFile(FileName, &l);
-				if (exp == 0)
-					printf("file not exist or cannot open.\n");
+				index = lenght(&l);
+				if (index == 0)
+				{
+					printf("Your list is empty do you want to delete the file "
+						   "contents?\n");
+					printf("1-Yes\n2-No\n");
+					flag = getChoice();
+					if (flag == 1)
+					{
+						exp = UploadToFile(FileName, &l);
+
+						if (exp == 0)
+							printf("file not exist or cannot open.\n");
+						else
+							printf("Written Successfully!\n");
+					}
+				}
 				else
-					printf("Inserted.\n");
+				{
+					exp = UploadToFile(FileName, &l);
+					if (exp == 0)
+						printf("file not exist or cannot open.\n");
+					else
+						printf("Written Successfully!\n");
+				}
 				break;
 
 			case 3:
-				break;
-			case 4:
-				break;
-			case 5:
-				break;
-			case 6:
-				break;
-			case 7:
-				sortList(&l);
-				break;
-
-			case 8:
-				break;
-			case 9:
-				break;
-			case 10:
-				printf("Enter the position.\n");
+				printf("\nEnter the position: ");
 				pos = getChoice();
 				if (pos >= 0 && pos <= lenght(&l))
 				{
-					printf("Enter the line.\n");
+					printf("\nEnter text: ");
 					strcpy(text, getString());
 					format(text);
 					InsertInPos(&l, pos, text);
+					printf("1- To save the changes into the file\n");
+					printf("2- To discard the changes\n");
+					printf("Enter your choice: ");
+					flag = getChoice();
+					if (flag == 1)
+					{
+						printf("\nEnter file name: ");
+						strcpy(FileName, getString());
+						exp = UploadToFile(FileName, &l);
+						if (exp == 0)
+							printf(
+								"File doesn't exist or couldn't be opened\n");
+						else
+							printf("Inserted Successfully!\n");
+					}
 				}
 				else
-					printf("position cannot found.\n");
-				break;
+					printf("Position not found.\n");
 
-			case 11:
-				TraverseDoubleList(&l, &DisplayDoubleList);
 				break;
-
-			case 12:
-				break;
-			case 13:
-				printf("Enter the position.\n");
+			case 4:
+				printf("\nEnter the position: ");
 				pos = getChoice();
 				if (pos >= 0 && pos < lenght(&l))
 				{
-					printf("Enter the line.\n");
+					DeleteInPos(&l, pos, text);
+					printf("The deleted line is: %s \n", text);
+					printf("1- To save the changes into the file\n");
+					printf("2- To discard the changes\n");
+					printf("Enter your choice: ");
+					flag = getChoice();
+					if (flag == 1)
+					{
+						printf("\nEnter file name: ");
+						strcpy(FileName, getString());
+						exp = UploadToFile(FileName, &l);
+						if (exp == 0)
+							printf(
+								"File doesn't exist or couldn't be opened\n");
+						else
+							printf("Inserted Successfully!\n");
+					}
+				}
+				else
+					printf("Position not found.\n");
+				break;
+			case 5:
+				printf("\nEnter file name: ");
+				strcpy(FileName, getString());
+				fptr = fopen(FileName, "r");
+				if (fgetc(fptr) == EOF)
+				{
+					printf("This file is empty\n");
+					break;
+				}
+				destroy(&l);
+				exp = removeAllLines(FileName);
+				if (exp == 0)
+					printf("File doesn't exist or couldn't be opened\n");
+				else if (exp == -1)
+					printf("File couldn't be truncated\n");
+				else
+					printf("Deleted Successfully!\n");
+				break;
+			case 6:
+				printf("\nEnter file name: ");
+				strcpy(FileName, getString());
+				printf("\nEnter line number: ");
+				pos = getChoice();
+				exp = ShowLineLength(FileName, pos);
+				if (exp == 0)
+					printf("File doesn't exist or couldn't be opened\n");
+				else if (exp == -1)
+					printf("Line doesn't exist\n");
+				else
+					printf("Length of line %d is %d\n", pos, exp);
+				break;
+			case 7:
+				sortList(&l);
+				printf("1- To save the changes into the file\n");
+				printf("2- To discard the changes\n");
+				printf("Enter your choice: ");
+				flag = getChoice();
+				if (flag == 1)
+				{
+					printf("\nEnter file name: ");
+					strcpy(FileName, getString());
+					exp = UploadToFile(FileName, &l);
+					if (exp == 0)
+						printf("File doesn't exist or couldn't be opened\n");
+					else
+						printf("Inserted Successfully!\n");
+				}
+				break;
+
+			case 8:
+				printf("Enter file name: ");
+				strcpy(FileName, getString());
+				fptr = fopen(FileName, "r");
+				if (!fptr)
+					printf("File doesn't exist or couldn't be opened\n");
+				else if (fgetc(fptr) == EOF)
+					printf("This file is empty\n");
+				else
+					ShowAllLines(FileName);
+				break;
+			case 9:
+				printf("\nEnter the position: ");
+				pos = getChoice();
+				if (pos >= 0 && pos < lenght(&l))
+				{
+					printf("\nEnter the line: ");
 					strcpy(text, getString());
 					format(text);
 					ReplaceLine(&l, pos, text);
+					printf("1- To save the changes into the file\n");
+					printf("2- To discard the changes\n");
+					printf("Enter your choice: ");
+					flag = getChoice();
+					if (flag == 1)
+					{
+						printf("\nEnter file name: ");
+						strcpy(FileName, getString());
+						exp = UploadToFile(FileName, &l);
+						if (exp == 0)
+							printf(
+								"File doesn't exist or couldn't be opened\n");
+						else
+							printf("Inserted Successfully!\n");
+					}
 				}
 				else
-					printf("position cannot found.\n");
+					printf("Position not found.\n");
+				break;
+			case 10:
+				TraverseDoubleList(&l, &DisplayDoubleList);
 				break;
 
-			case 14:
-				printf("Enter the position.\n");
+			case 11:
+				printf("\nEnter the position: ");
 				pos = getChoice();
 				if (pos >= 0 && pos < lenght(&l))
 				{
