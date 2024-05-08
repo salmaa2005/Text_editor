@@ -201,22 +201,18 @@ void Menu()
 					printf("Position not found.\n");
 				break;
 			case 5:
+				destroy(&l);
 				printf("\nEnter file name: ");
 				strcpy(FileName, getString());
-				fptr = fopen(FileName, "r");
-				if (fgetc(fptr) == EOF)
-				{
-					printf("This file is empty\n");
-					break;
-				}
-				destroy(&l);
-				exp = removeAllLines(FileName);
+				exp = UploadToFile(FileName, &l);
 				if (exp == 0)
 					printf("File doesn't exist or couldn't be opened\n");
-				else if (exp == -1)
-					printf("File couldn't be truncated\n");
-				else
-					printf("Deleted Successfully!\n");
+				fptr = fopen(FileName, "r");
+				if (getc(fptr) == EOF)
+				{
+					printf("This file is empty or doesn't exist\n");
+					break;
+				}
 				break;
 			case 6:
 				printf("\nEnter file name: ");
