@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void DisplayDoubleList(Info e[])
 {
@@ -201,18 +202,33 @@ void Menu()
 					printf("Position not found.\n");
 				break;
 			case 5:
+				index = lenght(&l);
+				if (index == 0)
+				{
+					printf("Your list is already empty proceed to delete the "
+						   "file\n");
+				}
 				destroy(&l);
 				printf("\nEnter file name: ");
 				strcpy(FileName, getString());
-				exp = UploadToFile(FileName, &l);
-				if (exp == 0)
-					printf("File doesn't exist or couldn't be opened\n");
 				fptr = fopen(FileName, "r");
-				if (getc(fptr) == EOF)
+				if (fptr == NULL)
 				{
-					printf("This file is empty or doesn't exist\n");
+					printf("File doesn't exist or couldn't be opened\n");
 					break;
 				}
+				if (getc(fptr) == EOF)
+				{
+					printf("This file is empty\n");
+					break;
+				}
+				if (truncate(FileName, 0) != 0)
+				{
+					printf("Failed to delete file contents\n");
+					break;
+				}
+				else
+					printf("Deleted Successfully!\n");
 				break;
 			case 6:
 				printf("\nEnter file name: ");
